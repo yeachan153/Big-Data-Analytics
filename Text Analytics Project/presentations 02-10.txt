@@ -1,0 +1,79 @@
+To do:
+- Standardize
+- rknn package for random knn feature selection
+- LDA modelling
+- new features (more predictors, interactions(!))
+- tip from Raoul: do not check normality assumption (whatever works, works in machine learning; this is mostly important for hypothesis testing)
+- tip from Raoul: do not do a manova for feature selection, just put all variables in backward selection
+
+
+
+
+B-Rex (3rd place): 
+	quickly comparing different models 5-fold cross-validation method
+	heatmaps: standardized predictor values, group by activity, calculate their means
+	KNN as base model
+	>240 predictors
+	Suggestion Raoul: include bar-diagram or something clearly showing which model is best and why
+
+Xtreme Sharks (1st place):
+	Feature ideas: correlations, power, energy(=sum((X1 - m1)^2)/128), ...
+	QDA high collinearity problems (do not use)
+	10-fold cross validation
+	rknn package (Exhausted Students team), rknnBeg-function
+		example code: selection <- rknnBeg(myData_train, activity_train, k=k)
+	>260 predictors
+	Future ideas: transformations, interactions, extra features
+	Raoul: the more features you add, the more correlation
+
+The late bloomers (8th place):
+	Feature ideas: No. of zerocross (after centering), peak to peak, FFT, spectrum
+	10-fold cross validation
+	LDA better than QDA
+	remove features with null correlations (Raoul: but you cannot calculate correlations?), removing features VIF>10
+	What we have learned: not necessary better to have more features, frequency domain features not very helpful
+	Next steps: adding interactions 
+	remove VIF>10 made things worse? Raoul: that shouldn't be the case. But does not matter. You can ignore the rule of thumbs if they don't help your performance. 
+
+Exhausted students (2nd place):
+	New features: entropy, log trans transformation, square root transformation (no improvement), all auto-correlations (could be useful, but not feasible, takes hours to calculate)
+	power= mean(X1^2)
+(!)	final model: LDA with features selected by KNN with all interactions
+	Raoul: difference with the Sharks? Presenter: Sharks have over 200 features, we have a subset. Raoul: this group is doing better, cause difference in accuracy small while model is way more parsimonous
+
+Nokia team (7th place)
+	New features:
+		trans_change = (median - q_25) / (q_75 - median)	credits to Raoul
+		bimodality = dip(x1, full.result = F, min.is.0 = F, debug=F)
+		peakn1 = length(findPeaks(x1)
+	Data cleansing:
+		Removing NA's
+		Removing epochs with sample <128
+		Standardizing variables using the scale function and dplyr
+		Standardizing the TESTset > using mean and sd of 1. training (80%), 2. Testset (20%)
+	Stepwise VIF
+		vif.func from beckmw.wordpress.com/2013/02/05/collinearity-and-stepwise-vif-selection/ to implement a stepwise VIF-selection procedure until all VIFs are <10
+			> extremely slow but helpful
+	Outliers
+		Multivariate outlier removal: PCA would be helpul (but not allowed yet)
+		Boxplot method: epochs removed based on means, skewness, sd...
+	Model
+		Feature selection: Random KNN with backward selection rknnBeg-function from package rknn
+			rknn_beg <- rknnnBeg(myData_random[1:2000,3:114], y = myData_random$activity[1:2000], k=3, stopat=55)
+			best_features <- bestset(x = rknn_beg...
+		QDA not a good idea
+		LDA backwards selection stepclass-function from package ...
+	Raoul: lot of time spent on feature selection and data cleaning. Is it really effective? Standardization is often already good enough.
+
+Classifired (4th place)
+	Exclude "-" DON'T
+	Feature ideas: IQR (code: IQR(X1)), min, max --- IQR1 and IQR3 included
+	No autocorrelations in back- or forward selection because some error? 
+		Comment other group (Peter): check for multicollinearity, remove those
+	QDA used with 'small' model (20-30 predictors?). Forward selection
+	
+The late bloomers (8th place):
+	>180 predictors
+	lots of autoregression (up until n=6)
+	future plans: autoregressive moving average model
+
