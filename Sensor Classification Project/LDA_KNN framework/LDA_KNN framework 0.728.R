@@ -7,16 +7,30 @@ classifications produced by the LDA and rely on a KNN classifier.
 
 How?
 
-We create 2 separate models that use different features - an LDA classifier (Sophie) and a KNN classifier.
-We make these 2 models independently as good as possible. Then, we predict what we can with
-the LDA classifier with a high degree of certainty, and leave the rest for the KNN to mop up. More
-technically, we look at the posterior probabilities given by the LDA.
+We create 2 separate models that use different features - an LDA classifier (Sophie's model 6) and a 
+KNN classifier. We make these 2 models independently as good as possible. Then, we predict what we 
+can with the LDA classifier with a high degree of certainty, and leave the rest for the KNN to mop up. 
+More technically, we look at the posterior probabilities given by the LDA for each class, and use a
+cut-off point at which we reject predictions from the LDA and fall back on KNN.
 
 Steps:
 
-1) Make the optimal KNN model with features (simple 9 features)
-2) Use the optimal LDA model with features (Use model 6 from Sophie)
-3) Join LDA and KNN together
+1) Make the optimal KNN model with features (9 simple features only).
+2) Use the optimal LDA model with features (Use model 6 from Sophie - 97 features).
+3) Supplement LDA predictions with low posterior probability with KNN
+
+This framework was tested on Kaggle and achieved 0.728. However, this was a rough first attempt at 1am. There
+are three ways in which it can be improved:
+
+1) Improve the LDA model (note that LDA and KNN don't have to use the same features!) 
+2) Play around with the posterior probability cut off at which predictions from LDA are discarded, and KNN
+   predictions are used instead (line 151). Currently, it's at 0.9 - therefore predictions from LDA with 
+   posterior probabilities of less than 0.9 are discarded. This yields around 1800 LDA classifications and 7
+   700 KNN classifications.
+3) Improve the KNN model (LOWEST PRIORITY - this KNN model was already tested on Kaggle on 04/10/18 and
+   achieved a score of 0.69. Not worth tampering with at this point because it's near our best submitted
+   KNN.)
+
 "
 library(MASS)
 library(caret)
@@ -37,6 +51,7 @@ a) Load in the data (pre-standardised across training/test set by running 'KNN_d
 b) Use simple features - mean/sd. 9 features selected.
 "
 ##### a) Load in the data
+# Or download from GitHub: https://github.com/yeachan153/Big-Data-Analytics/tree/master/Sensor%20Classification%20Project/LDA_KNN%20framework
 path_train = "/home/yeachan153/Desktop/BDS/R/Big Data Analytics/Big-Data-Analytics/Sensor Classification Project/LDA_KNN framework/KNN_train.csv"
 path_test = "/home/yeachan153/Desktop/BDS/R/Big Data Analytics/Big-Data-Analytics/Sensor Classification Project/LDA_KNN framework/KNN_test.csv"
 
@@ -104,6 +119,8 @@ myDataKNN =
 Importing the LDA model
 a) Import Sophie's rdata and extract predictions
 "
+# Download from groupchat.
+# GitHub link: https://github.com/yeachan153/Big-Data-Analytics/blob/master/Sensor%20Classification%20Project/Sophie_Workspace.Rdata
 load("/home/yeachan153/Desktop/BDS/R/Big Data Analytics/Big-Data-Analytics/Sensor Classification Project/Sophie_Workspace.Rdata")
 
 lda_model = lda(activity.x ~., data = tryout[,c(1,lda.backwardselection.V4$model$nr[c(-19,-39)])])
@@ -185,6 +202,7 @@ LDA_KNN %>%
   dplyr::select(Id, Predicted = activity) %>%
   mutate(Predicted = Predicted) %>%
   write_csv("test_set_predictions_LDA_P0.9_KNN_F9_K9.csv")
+
 
 
 
