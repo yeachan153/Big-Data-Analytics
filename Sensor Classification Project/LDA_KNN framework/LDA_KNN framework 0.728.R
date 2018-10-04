@@ -25,7 +25,7 @@ are three ways in which it can be improved:
 1) Improve the LDA model (note that LDA and KNN don't have to use the same features!) 
 2) Play around with the posterior probability cut off at which predictions from LDA are discarded, and KNN
    predictions are used instead (line 151). Currently, it's at 0.9 - therefore predictions from LDA with 
-   posterior probabilities of less than 0.9 are discarded. This yields around 1800 LDA classifications and 7
+   posterior probabilities of less than 0.9 are discarded. This yields around 1800 LDA classifications and 
    700 KNN classifications.
 3) Improve the KNN model (LOWEST PRIORITY - this KNN model was already tested on Kaggle on 04/10/18 and
    achieved a score of 0.69. Not worth tampering with at this point because it's near our best submitted
