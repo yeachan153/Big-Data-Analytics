@@ -162,6 +162,9 @@ for (current_row in 1:nrow(predictions_LDA_raw)) {
   predictions_LDA = append(predictions_LDA, predictions_current_row)
 }
 
+# Number unclassified
+# sum(is.na(predictions_LDA))
+
 "
 3) Joining LDA and KNN results together
 "
@@ -202,9 +205,3 @@ LDA_KNN %>%
   dplyr::select(Id, Predicted = activity) %>%
   mutate(Predicted = Predicted) %>%
   write_csv("test_set_predictions_LDA_P0.9_KNN_F9_K9.csv")
-
-
-
-
-
-
