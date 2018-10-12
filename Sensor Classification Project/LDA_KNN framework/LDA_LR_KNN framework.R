@@ -189,7 +189,7 @@ multinom_predict = predict(multi_model, testing_KNN, type = "prob")
 
 testdata_multi_raw =
   as.tibble(multinom_predict) %>%
-  mutate_all(funs(ifelse(. > 9, ., NA))) 
+  mutate_all(funs(ifelse(. > 0.88, ., NA))) 
 
 # Check how many rows we have predictions for after 0.85 cut off - 1380.
 # as.tibble(multinom_predict) %>%
@@ -274,7 +274,7 @@ LDA_LG_KNN %>%
   unite(Id, user_id, exp_id, sample) %>%
   dplyr::select(Id, Predicted = activity) %>%
   mutate(Predicted = Predicted) %>%
-  write_csv("test_set_predictions_LDA_P0.85_LG_P0.9_KNN_F9_K9.csv")
+  write_csv("test_set_predictions_LDA_P0.85_LG_P0.88_KNN_F9_K9.csv")
 
 # # Put everything together with KNN predictions
 # LDA_KNN =
